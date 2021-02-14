@@ -1,0 +1,7 @@
+description = 'Modelo: Entidades del proyecto'
+
+dependencies {
+
+    compile libs.spring_boot
+    
+}

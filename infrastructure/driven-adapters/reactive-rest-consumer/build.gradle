@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':model')
+    
+    implementation  libs.spring_boot
+    implementation  libs.unit_tests
+}

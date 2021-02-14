@@ -1,0 +1,30 @@
+description = "Capa de configuracion"
+
+// configure spring boot with gradle: start
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    //Domain: Entities
+    implementation project(':model')
+    //Domain: use cases
+    implementation project(':usecase')
+    //Infraestructure: entry points
+    implementation project(':reactive-web')
+    implementation project(':reactive-rest-consumer')
+
+    //Dependencias
+    implementation libs.spring_boot
+    //implementation libs.config_server
+    implementation libs.unit_tests
+}
+
+jar {
+    archivesBaseName = rootProject.name
+    libsDirName = project(":").getBuildDir()
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'co.com.taller.ca.movements.MainApplication'
+}

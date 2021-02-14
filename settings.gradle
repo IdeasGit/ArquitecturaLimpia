@@ -1,0 +1,13 @@
+rootProject.name = 'Service_AccountMovementsDeposit'
+
+include ":app-service"
+include ":model"
+include ":usecase"
+include ":reactive-web"
+include ':reactive-rest-consumer'
+
+project(':app-service').projectDir = file('./applications/app-service')
+project(':model').projectDir = file('./domain/model')
+project(':usecase').projectDir = file('./domain/usecase')
+project(':reactive-web').projectDir = file('./infrastructure/entry-points/reactive-web')
+project(':reactive-rest-consumer').projectDir = file('./infrastructure/driven-adapters/reactive-rest-consumer')
