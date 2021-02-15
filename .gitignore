@@ -79,7 +79,6 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
-/applications/app-service/src/main/resources/application.yaml
 /.settings
 /applications/app-service/*.classpath
 /applications/app-service/*.project
