@@ -1,0 +1,480 @@
+openapi: 3.0.0
+info:
+  title: "Practica_Saldos_Mas_Movimientos"
+  description: "Ejercicio de Konoha que permite consultar los saldos consolidados de los productos y la consulta de movimientos de cuenta de depósitos para un cliente"
+  version: 1.0.0
+tags:
+  - name: "Practica_Saldos_Mas_Movimientos"
+    description: "Servicio de Accounts Balance"
+  
+
+paths:
+  
+  # --------------------------------
+  # Health
+  # --------------------------------
+  /deposit/health:
+    get:
+      tags:
+        - "Salud del servicio"
+      summary: "Operación para verificar la salud del servicio"
+      description: "Operación para verificar la salud del servicio"
+      responses:
+        200:
+          description: "200 ok"
+
+          content:
+            application/vnd.bancolombia.v2+json:
+              schema:
+                type: "object"
+                $ref: "#/components/schemas/health"
+
+  # --------------------------------
+  # Consulta de movimientos cuenta de deposito
+  # --------------------------------
+  /deposit/movements:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Movimientos cuenta deposito"
+      summary: "Consulta la información de saldos y movimientos de una cuenta de depositos"
+      description: "Consulta la información de saldos y movimientos de una cuenta de depositos"
+          
+      requestBody:
+        required: true
+        description: ""
+        content:
+          application/vnd.bancolombia.v2+json:
+            schema:
+              $ref: '#/components/schemas/RequestAccountMovements'
+
+      responses:
+        200:
+          description: "TRANSACCIÓN EXITOSA"
+          
+          content:
+            application/vnd.bancolombia.v2+json:
+              schema:
+                type: "object"
+                $ref: "#/components/schemas/ResponseAccountMovements"
+  
+# --------------------------------
+# COMPONENTS
+# -------------------------------- 
+components:
+  
+  # --------------------------------
+  # SCHEMES - SECURITY
+  # --------------------------------  
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+
+  # --------------------------------
+  # SCHEMES
+  # --------------------------------  
+  schemas:
+
+  # --------------------------------
+  # Schemas - Health
+  # -------------------------------- 
+    health:
+      type: "object"
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: "Estatus del servicio"
+          example: "UP"
+  # -----------------------------------------
+  # SCHEMES - REQUEST DEPOSIT ACCOUNT MOVEMENTS
+  # -----------------------------------------    
+    RequestAccountMovements:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: object
+          uniqueItems: true
+          required:
+          - pagination
+          - account
+          - transaction
+          - office
+          properties:
+            pagination:
+              $ref: '#/components/schemas/pagination'
+            account:
+              $ref: '#/components/schemas/account'
+            transaction:
+              $ref: '#/components/schemas/transaction' 
+            office:
+              $ref: '#/components/schemas/office'
+
+  # -----------------------------------------
+  # SCHEMES - RESPONSE DEPOSIT ACCOUNT MOVEMENTS
+  # -----------------------------------------    
+    ResponseAccountMovements:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          uniqueItems: true
+          items:
+            required:
+            - movement
+            properties:
+              account:
+                $ref: '#/components/schemas/depositAccountMovements'
+                
+                
+  # --------------------------------
+  # SCHEMES - PAGINATION
+  # --------------------------------    
+    pagination:
+      type: object
+      required:
+       - key
+      properties:
+        size:
+          type: number
+          description: "Cantidad de registros por pagina"
+          example: 20
+        key:
+          type: number
+          description: "Numero de la página"
+          example: 1
+
+                
+  # --------------------------------
+  # SCHEMES - ACCOUNT
+  # --------------------------------    
+    account:
+      type: object
+      required:
+       - type
+       - number
+      properties:
+        type:
+          type: string
+          description: "Tipo de cuenta"
+          example: "CUENTA_CORRIENTE"
+          enum:
+          - CUENTA_DE_AHORRO
+          - CUENTA_CORRIENTE
+        number:
+          type: string
+          description: "Numero de cuenta"
+          example: "10115447858"
+          
+  # --------------------------------
+  # SCHEMES - TRANSACTION
+  # --------------------------------    
+    transaction:
+      type: object
+      properties:
+        startDate:
+          type: string
+          description: "Fecha inicial de consulta"
+          example: "2020-01-01"
+        endDate:
+          type: string
+          description: "Fecha final de consulta"
+          example: "2020-01-30"
+        minAmount:
+          type: number
+          description: "Valor inicial de consulta"
+          example: null
+        maxAmount:
+          type: number
+          description: "Valor final de consulta"
+          example: null
+        type:
+          type: string
+          description: "Tipo de Movimiento"
+          example: null
+          enum:
+          - DEBITO
+          - CREDITO
+        checkNumber:
+          type: string
+          description: "Numero de cheque"
+          example: null
+        group:
+          type: string
+          description: "Grupo del movimiento"
+          example: null
+        description:
+          type: string
+          description: "Descripcion del movimiento"
+          example: "Pago Nomina"
+  
+  # --------------------------------
+  # SCHEMES - DEPOSIT ACCOUNT MOVEMENTS
+  # -------------------------------- 
+
+    depositAccountMovements:
+      type: object
+      required:
+      - balances
+      properties:
+        balances:
+          $ref: '#/components/schemas/depositAccountBalance'
+        transaction:
+          $ref: '#/components/schemas/depositAccountTransaction'
+        office:
+          $ref: '#/components/schemas/office'
+        relatedTransferAccount:
+          $ref: '#/components/schemas/account'
+        customer:
+          $ref: '#/components/schemas/customer'
+        _responseSize:
+          type: number
+          description: "Total de registros"
+          example: 40
+        _flagMoreRecords:
+          type: boolean
+          description: "Indica si existen mas registros"
+          example: true
+          
+  # --------------------------------
+  # SCHEMES - CUSTOMER
+  # --------------------------------    
+    customer:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Nombre del cliente titular"
+          example: "Ferney Felipe Vanegas"
+
+  # --------------------------------
+  # SCHEMES - DEPOSIT ACOUNT BALANCE
+  # ---------------------------------- 
+
+    depositAccountBalance:
+      type: object
+      required:
+      - available
+      - availableOverdraftBalance
+      - overdraftValue
+      - availableOverdraftQuota
+      - effective
+      - current
+      - clearing
+      - receivable
+      - blocked
+      - clearingStartDay
+      - currentStartDay
+      - pockets
+      - remittanceQuota
+      - agreedRemittanceQuota
+      - remittanceQuotaUsage
+      - normalInterest
+      - suspensionInterest
+      properties:
+        available:
+          type: number
+          format: float
+          description: Saldo disponible.
+          example: 25000000
+          maxLength: 21
+          minLength: 1
+        availableOverdraftBalance:
+          type: number
+          format: float
+          description: Saldo disponible. + Valor cupo de sobregiro.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        overdraftValue:
+          type: number
+          format: float
+          description: Valor total del Cupo de Sobregiro.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        availableOverdraftQuota:
+          type: number
+          format: float
+          description: Valor del Cupo de Sobregiro que se puede utilizar.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        effective:
+          type: number
+          format: float
+          description: Saldo disponible + Valor cupo de sobregiro.
+          example: 25000000
+          maxLength: 21
+          minLength: 1
+        current:
+          type: number
+          format: float
+          description: Saldo en efectivo.
+          example: 25000000
+          maxLength: 21
+          minLength: 1
+        clearing:
+          type: number
+          format: float
+          description: Saldo en canje.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        receivable:
+          type: number
+          format: float
+          description: Saldos en cuentas por cobrar.
+          example: 1500000
+          maxLength: 21
+          minLength: 1
+        blocked:
+          type: number
+          format: float
+          description: Saldo bloqueado.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        clearingStartDay:
+          format: float
+          description: Saldo en canje al inicio del día.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        pockets:
+          type: number
+          format: float
+          description: Saldo de bolsillos.
+          example: 5000000
+          maxLength: 21
+          minLength: 1
+        availableStartDay:
+          type: number
+          format: float
+          description: Saldo disponible al inicio del día.
+          example: 5000000
+          maxLength: 21
+          minLength: 1
+        currentStartDay:
+          type: number
+          format: float
+          description: Saldo total al inicio de día.
+          example: 5000000
+          maxLength: 21
+          minLength: 1
+        effectiveStartDay:
+          type: number
+          format: float
+          description: Saldo efectivo al inicio de día.
+          example: 5000000
+          maxLength: 21
+          minLength: 1
+        remittanceQuota:
+          type: number
+          format: float
+          description: Cupo remesas consignadas.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        agreedRemittanceQuota:
+          type: number
+          format: float
+          description: Cupo remesa negociada.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        remittanceQuotaUsage:
+          type: number
+          format: float
+          description: Saldo utilizado del cupo de la remesa.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        normalInterest:
+          type: number
+          format: float
+          description: Intereses de sobregiro que tienen menos de 90 días.
+          example: 0
+          maxLength: 21
+          minLength: 1
+        suspensionInterest:
+          type: number
+          format: float
+          description: Intereses de sobregiro que tienen mas de 90 días o menos dependiendo
+            de la calificación del cliente.
+          example: 0
+          maxLength: 21
+          minLength: 1
+          
+  # --------------------------------
+  # SCHEMES - DEPOSIT ACCOUNT TRANSACTION
+  # -------------------------------- 
+    depositAccountTransaction:
+      type: array
+      items:
+        required:
+          - postedDate 
+          - description
+          - amount
+        properties:
+            id:
+              type:  string
+              description: "Codigo de la transacción"
+              example: "8316"
+            postedDate :
+              type:  string
+              description: "Fecha del movimiento"
+              example: "2020-03-01"
+            description:
+              type:  string
+              description: "Descripcion del movimiento"
+              example: "Abono preautorizado donación"
+            amount:
+              type:  number
+              description: "Valor del movimiento"
+              example: 12,400.0000
+            type:
+              type:  string
+              description: "Tipo de movimiento"
+              example: "DEBITO"
+            reference1:
+              type:  string
+              description: "Referencia movimiento 1"
+              example: null
+            reference2:
+              type:  string
+              description: "Referencia movimiento 2"
+              example: null
+            reference3:
+              type:  string
+              description: "Referencia movimiento 3"
+              example: null
+            checkNumber:
+              type:  string
+              description: "Numero del cheque"
+              example: null
+
+              
+  # --------------------------------
+  # SCHEMES - OFFICE
+  # -------------------------------- 
+    office:
+      type: object
+      properties:
+          code: 
+              type:  string
+              description: "Código de la sucursal dueña de la cuenta"
+              example: "406"
+          name:
+              type: string
+              description: "Nombre de la oficina"
+              example: "Direccion General"
+  

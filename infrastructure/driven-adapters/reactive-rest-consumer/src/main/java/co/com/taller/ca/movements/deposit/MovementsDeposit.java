@@ -1,17 +1,19 @@
 package co.com.taller.ca.movements.deposit;
 
 import co.com.taller.ca.movements.gateway.AccountMovementsGateway;
-import co.com.taller.ca.movements.model.DataAccountTransactionRQ;
 import co.com.taller.ca.movements.model.Account;
 import co.com.taller.ca.movements.model.AccountTransactions;
 import co.com.taller.ca.movements.model.BalancesDeposit;
+import co.com.taller.ca.movements.model.DataAccountTransactionRQ;
 import co.com.taller.ca.movements.model.DataAccountTransactionsRS;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+@Setter
 @Component
 public class MovementsDeposit implements AccountMovementsGateway {
     @Value("${Servicio.urlMovements}")

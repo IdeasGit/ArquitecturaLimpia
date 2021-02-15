@@ -15,7 +15,6 @@ dependencies {
 
     //Dependencias
     implementation libs.spring_boot
-    //implementation libs.config_server
     implementation libs.unit_tests
 }
 
