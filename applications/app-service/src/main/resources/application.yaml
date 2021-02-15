@@ -1,0 +1,12 @@
+##Spring Configuration
+server:
+  port: 9080
+spring:
+  application:
+    name: Service_AccountMovementsDeposit
+  devtools:
+    add-properties: false
+
+Servicio:
+  urlMovements: https://retrievebalance.getsandbox.com/retrieveTransaction
+  urlBalances: https://retrievebalance.getsandbox.com/retrieveBalance
